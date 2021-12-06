@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+<ui:composition template="layout.xhtml">
+	<ui:define name="content">
+		<h:form id="studForm">
+			<p:panel header="Student Info" id="studInfoPnl"
+					 style="background-color: #EEE8AA;
+					 color: black;
+					 max-width: 550px; margin-left: 35%; margin-bottom: 50px">
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="firstName" value="First Name: " />
+					<p:inputText id="firstName" size="40"
+								 value="#{studController.studUiTO.firstName}" required="true"
+								 requiredMessage="Please enter first name " />
+
+					<p:outputLabel for="lastName" value="Last Name: " />
+					<p:inputText id="lastName" size="40"
+								 value="#{studController.studUiTO.lastName}" required="true"
+								 requiredMessage="Please enter last name " />
+
+					<p:outputLabel for="studemail" value="E-Mail : " />
+					<p:inputText id="studemail"
+						value="#{studController.studUiTO.emailId}" size="40"
+						required="true" label="Email Address">
+						<f:validator validatorId="customEmailValidator" />
+					</p:inputText>
+
+					<p:outputLabel for="studneptun" value="Neptun ID : " />
+					<p:inputText id="studneptun"
+								 value="#{studController.studUiTO.neptunId}" size="10"
+								 label="Neptun Id">
+						<f:validator validatorId="customNeptunIdValidator" />
+					</p:inputText>
+
+					<p:outputLabel for="studpassword" value="Password: " />
+					<p:password id="studpassword" size="40"
+								value="#{studController.studUiTO.password}" />
+
+					<p:outputLabel for="studmajor" value="Major: " />
+					<p:selectOneMenu id="studmajor"
+						value="#{studController.studUiTO.majorUITO}"
+						style="width:105px" converter="#{majorConverter}">
+						<f:selectItems value="#{studController.majorUiToList}"
+							var="majorUITO" itemLabel="#{majorUITO.majorName}"
+							itemValue="#{majorUITO}" />
+					</p:selectOneMenu>
+
+					<h:commandButton value="#{studController.actionLabel}"
+						action="#{studController.doSaveInfoStud}">
+						<f:ajax execute="studForm" render="studlist studInfoPnl" />
+					</h:commandButton>
+
+				</h:panelGrid>
+			</p:panel>
+
+
+			<p:panel header="Student List" id="studlist" style="background-color: #EEE8AA;">
+				<p:dataTable id="table" var="stud"
+					value="#{studController.studUiToList}">
+					<p:column>
+						<f:facet name="header"># Student ID</f:facet>
+						<h:outputText value="#{stud.studId}" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">First Name</f:facet>
+						<h:outputText value="#{stud.firstName}" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">Last Name</f:facet>
+						<h:outputText value="#{stud.lastName}" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">Email </f:facet>
+						<h:outputText value="#{stud.emailId}">
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<f:facet name="header">Neptun ID </f:facet>
+						<h:outputText value="#{stud.neptunId}">
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<f:facet name="header">Major </f:facet>
+						<h:outputText value="#{stud.majorUITO.majorName}" />
+					</p:column>
+					<p:column id="action">
+						<f:facet name="header">Action</f:facet>
+						<h:commandLink value="Edit"
+							action="#{studController.editStudent(stud)}">
+							<f:ajax execute="action" render="studForm" />
+						</h:commandLink> /
+						  <sec:authorize access="hasRole('ROLE_ADMIN')">
+							<h:commandLink value="Delete"
+								action="#{studController.deleteStudent(stud)}">
+								<f:ajax execute="action" render="table" />
+							</h:commandLink>
+						</sec:authorize>
+					</p:column>
+
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>
